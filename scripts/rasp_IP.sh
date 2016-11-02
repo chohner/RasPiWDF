@@ -9,5 +9,6 @@ r=1
 for ((i=-r; i<=r; i++)); do
   s=$ip_static$((ip_sweep+i)).0/24
   echo "Searching in : "$s
-  sudo nmap -sP $s | awk '/^Nmap/{ip=$NF}/B8:27:EB/{print ip}'
+  sudo nmap -sP $s | awk '/^Nmap/{ip=$NF}/B8:27:EB/{print "Raspberry IP: "ip}'
 done
+
