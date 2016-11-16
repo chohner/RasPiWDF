@@ -15,31 +15,25 @@
 *
 */
 
-
 #include <iostream>
 #include <stdlib.h>
 #include <unistd.h>
 #include <cmath>
 #include <jackaudioio.hpp>
 
-
 #include "PI/singlesample.h"
-
 
 using std::cout;
 using std::endl;
 
-
-
+/// SAMPLELOOPER
 class SampleLooper: public JackCpp::AudioIO {
 
 private:
-
     SingleSample    *sample;
 
 public:
-    /// Audio Callback Function:
-    /// - the output buffers are filled here
+    /// Audio Callback Function, output buffers are filled here
     virtual int audioCallback(jack_nframes_t nframes,
                               // A vector of pointers to each input port.
                               audioBufVector inBufs,
@@ -49,36 +43,26 @@ public:
         /// LOOP over all output buffers
         for(unsigned int i = 0; i < 1; i++)
         {
-
             sample->get_frame(nframes,outBufs[0]);
-
         }
-
-        ///return 0 on success
-        return 0;
+        return 0; /// Return 0 on success
     }
 
     /// Constructor
-    SampleLooper(std::string s) :
+    SampleLooper(std::string fileName) :
         JackCpp::AudioIO("sample_looper", 0,1){
-
 
         reserveInPorts(2);
         reserveOutPorts(2);
 
-
         /// allocate the sample player
-        sample = new SingleSample(s);
-
+        sample = new SingleSample(fileName);
         sample->set_rate(1.0);
-
     }
-
 };
 
-///
-///
-///
+
+/// MAIN
 int main(int argc, char *argv[]){
 
     if(argc<=1)
@@ -87,17 +71,15 @@ int main(int argc, char *argv[]){
         return 0;
     }
 
-    std::string s(argv[1]);
+    /// Create looper with filename from first commandline arg
+    SampleLooper * t = new SampleLooper( std::string(argv[1]) );
 
-    /// initial ports from constructor created here.
-    SampleLooper * t = new SampleLooper(s);
-
-    /// activate the client
+    /// Start the jack client (also starts loop)
     t->start();
 
-    /// connect sine ports to stereo ports
-    t->connectToPhysical(0,0);		// connects this client out port 0 to physical destination port 0
-    t->connectToPhysical(0,1);		// connects this client out port 1 to physical destination port 1
+    /// connect mono loop port to stereo output ports
+    t->connectToPhysical(0,0);
+    t->connectToPhysical(0,1);
 
     ///print names
     cout << "Output port(s):" << endl;
@@ -110,7 +92,7 @@ int main(int argc, char *argv[]){
 
     /// Break down
     t->disconnectOutPort(0); // Discconect out port.
-    t->close();	// stop client.
-    delete t;	// always clean up after yourself.
+    t->close();	// Stop client.
+    delete t;	// Always clean up after yourself.
     exit(0);
 }
