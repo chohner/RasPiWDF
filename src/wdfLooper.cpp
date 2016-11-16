@@ -49,7 +49,7 @@ public:
     }
 
     /// Constructor
-    SampleLooper(std::string fileName) :
+    SampleLooper(std::string fileName, float playbackRate) :
         JackCpp::AudioIO("sample_looper", 0,1){
 
         reserveInPorts(2);
@@ -57,22 +57,28 @@ public:
 
         /// allocate the sample player
         sample = new SingleSample(fileName);
-        sample->set_rate(1.0);
+        sample->set_rate(playbackRate);
     }
 };
 
 
 /// MAIN
 int main(int argc, char *argv[]){
+    float playbackRate = 1.0;
 
-    if(argc<=1)
-    {
+    if(argc<=1){
         cout << "Pass path to wav-file as argument!" << endl;
         return 0;
     }
+    else if(argc==2) {
+        playbackRate = 1.0;
+    }
+    else {
+        playbackRate = atof(argv[2]);
+    }
 
     /// Create looper with filename from first commandline arg
-    SampleLooper * t = new SampleLooper( std::string(argv[1]) );
+    SampleLooper * t = new SampleLooper( std::string(argv[1]), playbackRate );
 
     /// Start the jack client (also starts loop)
     t->start();
