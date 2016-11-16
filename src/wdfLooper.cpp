@@ -100,16 +100,16 @@ int main(int argc, char *argv[]){
     t->connectToPhysical(0,1);		// connects this client out port 1 to physical destination port 1
 
     ///print names
-    cout << "outport names:" << endl;
+    cout << "Output port(s):" << endl;
     for(unsigned int i = 0; i < t->outPorts(); i++)
         cout << "\t" << t->getOutputPortName(i) << endl;
 
-    /// run for EVER
-    sleep(-1);
+    /// Run until ENTER key
+    printf("### Press ENTER to quit ###\n");
+    getchar();
 
-    /// never reached:!=
-    t->disconnectInPort(0);	// Disconnecting ports.
-    t->disconnectOutPort(1);
+    /// Break down
+    t->disconnectOutPort(0); // Discconect out port.
     t->close();	// stop client.
     delete t;	// always clean up after yourself.
     exit(0);
