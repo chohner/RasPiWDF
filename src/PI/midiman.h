@@ -37,8 +37,19 @@
 class MidiMan
 {
 
+
+
 public:
-   MidiMan();
+
+    typedef struct  {
+        int byte1		  = -1;
+        int byte2             = -1;
+        double byte3          = -1;
+        bool hasBeenProcessed = false;
+
+    }midiMessage;
+
+    MidiMan();
     ~MidiMan();
 
     std::vector<std::string> returnAllNames();
@@ -69,9 +80,11 @@ public:
 
     static void finish(int ignore);
 
-    int get_rtmidi(int byteIDX);
+    midiMessage get_rtmidi();
 
     void setVerbose();
+
+
 
 private:
 
@@ -87,7 +100,14 @@ private:
     noteMessage *tmpNote;
 
     void mycallback( double deltatime, std::vector< unsigned char > *message, void *userData );
+
+
 };
+
+
+
+
+
 
 
 #endif // MIDIMAN_H

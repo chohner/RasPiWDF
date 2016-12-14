@@ -14,9 +14,9 @@
  *
  * \version $Revision: 0.5 $
  *
- * \date $Date: 2005/04/14 14:16:20 $
+ * \date $Date: 2016/11/22 14:16:20 $
  *
- * Contact: von_coler@intelligent-noise-solutions.de
+ * Contact: voncoler@tu-berlin.de
  *
  *
  */

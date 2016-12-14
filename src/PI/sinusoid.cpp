@@ -24,9 +24,7 @@ Sinusoid::Sinusoid(double f, double a, double p,  int fS)
     freq    = f;
     amp     = a;
     phi     = p;
-
     fs      = fS;
-
 }
 
 double Sinusoid::getNextSample()
@@ -43,7 +41,14 @@ double Sinusoid::getNextSample()
     thisVal = thisVal*amp;
 
     // rotate to next step
-    phi += 2.0*M_PI * freq * (1.0/fs);
+    phi += 2.0 * M_PI * freq * (1.0/ (double) fs);
+
+    // wrap to 2 pi
+    if(phi>=2*M_PI)
+    {
+        phi -= 2*M_PI;
+
+    }
 
     return thisVal;
 

@@ -12,10 +12,11 @@ public:
     Sinusoid(double f, double a, double p, int fS);
     void proceed(double ms);
 
+    /// getters
     double frequency();
     double amplitude();
     double phase();
-
+    /// setters (override)
     void frequency(double f);
     void amplitude(double a);
     void phase(double p);

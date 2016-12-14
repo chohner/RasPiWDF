@@ -35,7 +35,7 @@ void SingleSample::set_pos(double p)
 
 }
 
-// loop play
+/// loop play
 void SingleSample::get_frame(int n, float* a)
 {
     for(int i=0; i<n; i++)
@@ -157,7 +157,7 @@ void SingleSample::read_wavefile(std::string filePath)
 
     initialize();
 
-    int num = sf_read_double  (sf,x,info.frames*info.channels);
+    int num = sf_read_double (sf,x,info.frames*info.channels);
     sf_close(sf);
 
 }

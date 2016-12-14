@@ -52,6 +52,7 @@ int OscMan::double_callback(const char *path, const char *types, lo_arg ** argv,
     {
 
 
+        std::cout << "GOT FLOAT" << std::endl;
 
         /// assemble the struct
         dMess tmpD;
@@ -65,6 +66,7 @@ int OscMan::double_callback(const char *path, const char *types, lo_arg ** argv,
     else if (std::string(types)=="i")
     {
 
+        std::cout << "GOT INT" << std::endl;
 
 
         /// assemble the struct
