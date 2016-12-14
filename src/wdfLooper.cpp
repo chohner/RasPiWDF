@@ -25,6 +25,13 @@
 
 #include "rt-wdf_lib/Libs/rt-wdf/rt-wdf.h"
 
+// Circuits
+#include "Circuits/wdfCCTAx1Tree.hpp"
+//#include "Circuits/wdfCCTAx4Tree.hpp"
+//#include "Circuits/wdfJTM45Tree.hpp"
+//#include "Circuits/wdfSwitchTree.hpp"
+//#include "Circuits/wdfTonestackTree.hpp"
+
 using std::cout;
 using std::endl;
 
@@ -33,6 +40,7 @@ class SampleLooper: public JackCpp::AudioIO {
 
 private:
     SingleSample    *sample;
+    wdfTree* myWdfTree;
 
 public:
     /// Audio Callback Function, output buffers are filled here
