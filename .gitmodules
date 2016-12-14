@@ -1,0 +1,3 @@
+[submodule "src/rt-wdf_lib"]
+	path = src/rt-wdf_lib
+	url = https://github.com/RT-WDF/rt-wdf_lib.git
