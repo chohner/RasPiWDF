@@ -23,6 +23,8 @@
 
 #include "PI/singlesample.h"
 
+#include "rt-wdf_lib/Libs/rt-wdf/rt-wdf.h"
+
 using std::cout;
 using std::endl;
 
