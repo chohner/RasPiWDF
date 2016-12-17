@@ -13,21 +13,26 @@ if [ "${ip_sweep:1}" = "." ]
     ip_sweep=${ip_sweep:0:1}
 fi
 
-# search range around third byte
+# define search range around third byte:
 r=1
+
+# search and print
+search () {
+  # pass IP
+  echo "Searching in : "$1
+  sudo nmap -sP $1 | awk '/^Nmap/{ip=$NF}/B8:27:EB/{print "Raspberry IP: "ip}'
+}
 
 # start with current
 s=$ip_static$ip_sweep.0/24
-echo "Searching in : "$s
-sudo nmap -sP $s | awk '/^Nmap/{ip=$NF}/B8:27:EB/{print "Raspberry IP: "ip}'
+search $s
 
 echo "- start sweeping -"
 for ((i=-r; i<=r; i++)); do
   if [ $i -eq 0 ]; then
-    #skip current
+    # skip current
     i+=1
   fi
   s=$ip_static$((ip_sweep+i)).0/24
-  echo "Searching in : "$s
-  sudo nmap -sP $s | awk '/^Nmap/{ip=$NF}/B8:27:EB/{print "Raspberry IP: "ip}'
+  search $s
 done
