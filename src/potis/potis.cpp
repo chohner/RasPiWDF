@@ -8,7 +8,8 @@
 #include <inttypes.h>  // uint8_t, etc
 #include <linux/i2c-dev.h> // I2C bus definitions
 
-using namespace std;
+using std::cout;
+using std::endl;
 
 int fd;
 // adress with addr=GND : 0x48
