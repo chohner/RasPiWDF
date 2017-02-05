@@ -1,3 +1,3 @@
 #!/bin/sh
 
-g++ -Wall ./src/potis/potis.cpp -o ./build/potis
+g++ -std=c++11 -Wall ./src/potis/main.cpp ./src/potis/potis.cpp -lpthread -o ./build/potis
