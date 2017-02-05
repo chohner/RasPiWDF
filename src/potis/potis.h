@@ -1,0 +1,17 @@
+#ifndef POTIS_H
+#define POTIS_H
+
+class Potis {
+  private:
+    float poti0;
+    float poti1;
+    float poti2;
+    float poti3;
+
+  public:
+    float getPoti(int potNo);
+
+    void setPoti(int potNo, float potVal);
+};
+
+#endif  // POTIS_H
