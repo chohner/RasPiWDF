@@ -55,7 +55,7 @@ public:
         {
             sample->get_frame(nframes,outBufs[0]);
         }
-        return 0; /// Return 0 on success
+        return 0;
     }
 
     /// Constructor
@@ -74,7 +74,7 @@ public:
 
 /// MAIN
 int main(int argc, char *argv[]){
-    float playbackRate = 1.0;
+    float playbackRate = 2.0;
 
     if(argc<=1){
         cout << "Pass path to wav-file as argument!" << endl;

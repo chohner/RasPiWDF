@@ -37,7 +37,6 @@ void setup_ads(){
     exit (1);
   }
 
-  // setup for continuous mode
   bool continuousMode = true;
 
   // setup ADS1115
@@ -80,7 +79,6 @@ void setup_ads(){
   }
 
   cout << "ADS1115 Setup complete" << endl;
-  // print time
   end = std::chrono::high_resolution_clock::now();
   double time_elapsed = std::chrono::duration_cast<std::chrono::milliseconds>( end - start ).count();
   cout << "Setup took " << time_elapsed << " miliseconds to execute\n"<< endl;
@@ -109,12 +107,12 @@ float read_ads(){
   // multiply by 256 then add readBuf[1]
   val = readBuf[0] << 8 | readBuf[1];
   if (val < 0)   val = 0;  // LSB sometimes generates very low neg number.
-  // return voltage
+
   potVal = val * VPS;
   return potVal;
 }
 
-void reading(int n){
+void read_n_values(int n){
   for (int i = 0; i < n; ++i){
     potis.setPoti(0, read_ads());
     cout << potis.getPoti(0) << " Volt" << endl;
@@ -124,10 +122,10 @@ void reading(int n){
 
 
 int main() {
-  setup_ads();  // setup and start
+  setup_ads();
 
   int n = 100;
-  std::thread readingThread (reading, n);
+  std::thread readingThread (read_n_values, n);
   //readingThread.detach();  // don't wait
   readingThread.join();  // pauses until finished
 
