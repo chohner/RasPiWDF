@@ -9,6 +9,7 @@
 #include <stdlib.h>    // exit
 #include <inttypes.h>  // uint8_t, etc
 #include <linux/i2c-dev.h> // I2C bus definitions
+#include <cmath>
 
 //Global Potis
 #include "potis.h"
@@ -113,9 +114,18 @@ float read_ads(){
 }
 
 void read_n_values(int n){
+  float maxVolt = 2.0;
+
   for (int i = 0; i < n; ++i){
-    potis.setPoti(0, read_ads());
-    cout << potis.getPoti(0) << " Volt" << endl;
+    float curVolt = read_ads();
+    curVolt = std::round(curVolt * 100) / 100;
+
+    if (curVolt > maxVolt) maxVolt = curVolt;
+
+    float curValue = curVolt / maxVolt;
+
+    potis.setPoti(0, curValue);
+    cout << curVolt << " Volt => " << potis.getPoti(0) << endl;
     usleep(10000);  // microseconds
   }
 }
@@ -124,7 +134,7 @@ void read_n_values(int n){
 int main() {
   setup_ads();
 
-  int n = 100;
+  int n = 10000;
   std::thread readingThread (read_n_values, n);
   //readingThread.detach();  // don't wait
   readingThread.join();  // pauses until finished
