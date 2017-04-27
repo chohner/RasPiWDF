@@ -1,20 +1,3 @@
-/**
-* \class SampleLooper
-*
-* \brief Just loops a WAV file!
-*
-* \author Henrik von Coler
-*
-* \version $Revision: 0.5 $
-*
-* \date $Date: 2016/08/14 14:16:20 $
-*
-*
-* Contact: von_coler@tu-berlin.de
-*
-*
-*/
-
 #include <iostream>
 #include <stdlib.h>
 #include <unistd.h>
@@ -26,21 +9,20 @@
 #include "rt-wdf_lib/Libs/rt-wdf/rt-wdf.h"
 
 // Circuits
-#include "Circuits/wdfCCTAx1Tree.hpp"
+//#include "Circuits/wdfCCTAx1Tree.hpp"
 //#include "Circuits/wdfCCTAx4Tree.hpp"
 //#include "Circuits/wdfJTM45Tree.hpp"
 //#include "Circuits/wdfSwitchTree.hpp"
-//#include "Circuits/wdfTonestackTree.hpp"
+#include "Circuits/wdfTonestackTree.hpp"
 
 using std::cout;
 using std::endl;
 
-/// SAMPLELOOPER
 class SampleLooper: public JackCpp::AudioIO {
 
 private:
     SingleSample    *sample;
-    wdfTree* myWdfTree;
+    wdfTree *myWdfTree;
 
 public:
     /// Audio Callback Function, output buffers are filled here
@@ -53,7 +35,14 @@ public:
         /// LOOP over all output buffers
         for(unsigned int i = 0; i < 1; i++)
         {
-            sample->get_frame(nframes,outBufs[0]);
+            sample->get_frame(nframes, outBufs[0]);
+            for (unsigned int sample = 0; sample < nframes; sample++)
+            {
+                //float inVoltage = outBufs[0][sample];
+                myWdfTree->setInputValue(outBufs[0][sample]);
+                myWdfTree->cycleWave();
+                outBufs[0][sample] = { (float)(myWdfTree->getOutputValue()) };
+            }
         }
         return 0;
     }
@@ -68,23 +57,24 @@ public:
         /// allocate the sample player
         sample = new SingleSample(fileName);
         sample->set_rate(playbackRate);
+
+        myWdfTree = new wdfTonestackTree();
+        myWdfTree->initTree();
+        myWdfTree->adaptTree();
     }
 };
 
 
 /// MAIN
 int main(int argc, char *argv[]){
+    // WDF stuff
+    //wdfTree *myWdfTree;
+
     float playbackRate = 2.0;
 
     if(argc<=1){
         cout << "Pass path to wav-file as argument!" << endl;
         return 0;
-    }
-    else if(argc==2) {
-        playbackRate = 1.0;
-    }
-    else {
-        playbackRate = atof(argv[2]);
     }
 
     /// Create looper with filename from first commandline arg

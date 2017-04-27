@@ -1,2 +1,4 @@
-sudo chown akt: /dev/i2c-1
-sudo chmod u+rw /dev/i2c-1
+#!/usr/bin/env bash
+
+chgrp i2c /dev/i2c-1
+chmod g+rw /dev/i2c-1
