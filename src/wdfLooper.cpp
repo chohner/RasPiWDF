@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <cmath>
+#include <thread>
 #include <jackaudioio.hpp>
 
 #include "PI/singlesample.h"
@@ -18,6 +19,7 @@
 using std::cout;
 using std::endl;
 
+
 class SampleLooper: public JackCpp::AudioIO {
 
 private:
@@ -25,6 +27,18 @@ private:
     wdfTree *myWdfTree;
 
 public:
+
+    static void wdf_callback(wdfTree *myWdfTree, jack_nframes_t nframes, audioBufVector outBufsWdf){
+            for (unsigned int i_sample = 0; i_sample < nframes; i_sample++)
+            {
+                //float inVoltage = outBufs[0][i_sample];
+                myWdfTree->setInputValue(outBufsWdf[0][i_sample]);
+                myWdfTree->cycleWave();
+                outBufsWdf[0][i_sample] = { (float)(myWdfTree->getOutputValue()) };
+            }
+    }
+
+
     /// Audio Callback Function, output buffers are filled here
     virtual int audioCallback(jack_nframes_t nframes,
                               // A vector of pointers to each input port.
@@ -32,17 +46,16 @@ public:
                               // A vector of pointers to each output port.
                               audioBufVector outBufs){
 
+      std::thread wdfThread(SampleLooper::wdf_callback, myWdfTree, nframes, outBufs);
+
+
         /// LOOP over all output buffers
         for(unsigned int i = 0; i < 1; i++)
         {
             sample->get_frame(nframes, outBufs[0]);
-            for (unsigned int sample = 0; sample < nframes; sample++)
-            {
-                //float inVoltage = outBufs[0][sample];
-                myWdfTree->setInputValue(outBufs[0][sample]);
-                myWdfTree->cycleWave();
-                outBufs[0][sample] = { (float)(myWdfTree->getOutputValue()) };
-            }
+
+            wdfThread.join();
+
         }
         return 0;
     }
@@ -61,7 +74,7 @@ public:
         myWdfTree = new wdfTonestackTree();
         myWdfTree->initTree();
         myWdfTree->adaptTree();
-    }
+        }
 };
 
 
