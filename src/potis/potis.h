@@ -14,4 +14,8 @@ class Potis {
     void setPoti(int potNo, float potVal);
 };
 
+void setup_ads();
+void powerdown_ads();
+void read_n_values(int n);
+
 #endif  // POTIS_H

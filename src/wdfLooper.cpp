@@ -8,6 +8,7 @@
 
 #include "PI/singlesample.h"
 #include "rt-wdf_lib/Libs/rt-wdf/rt-wdf.h"
+#include "potis/potis.h"
 
 // Circuits
 //#include "Circuits/wdfCCTAx1Tree.hpp"
@@ -104,6 +105,10 @@ int main(int argc, char *argv[]){
         for(unsigned int i = 0; i < t->outPorts(); i++)
                 cout << "\t" << t->getOutputPortName(i) << endl;
 
+        /// Potis
+        setup_ads();
+        std::thread readingThread(read_n_values, 100);
+        readingThread.detach();
         /// Run until ENTER key
         printf("### Press ENTER to quit ###\n");
         getchar();
@@ -112,5 +117,6 @@ int main(int argc, char *argv[]){
         t->disconnectOutPort(0); // Discconect out port.
         t->close(); // Stop client.
         delete t; // Always clean up after yourself.
+        powerdown_ads();
         exit(0);
 }
