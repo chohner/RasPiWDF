@@ -49,6 +49,8 @@ virtual int audioCallback(jack_nframes_t nframes,
 
         std::thread wdfThread(SampleLooper::wdf_callback, myWdfTree, nframes, outBufs);
 
+        myWdfTree->setParam(2, 6);
+
         /// LOOP over all output buffers
         for(unsigned int i = 0; i < 1; i++)
         {
@@ -73,6 +75,7 @@ SampleLooper(std::string fileName, float playbackRate) :
 
         myWdfTree = new wdfTonestackTree();
         myWdfTree->initTree();
+        myWdfTree->setSamplerate(44100);
         myWdfTree->adaptTree();
 }
 };
