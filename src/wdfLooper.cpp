@@ -3,10 +3,10 @@
 #include <unistd.h>
 #include <cmath>
 #include <thread>
-#include <jackaudioio.hpp>
+
+#include "jackaudioio.hpp"
 
 #include "PI/singlesample.h"
-
 #include "rt-wdf_lib/Libs/rt-wdf/rt-wdf.h"
 
 // Circuits
@@ -20,48 +20,47 @@ using std::cout;
 using std::endl;
 
 
-class SampleLooper: public JackCpp::AudioIO {
+class SampleLooper : public JackCpp::AudioIO {
 
 private:
-    SingleSample    *sample;
-    wdfTree *myWdfTree;
+SingleSample  *sample;
+wdfTree *myWdfTree;
 
 public:
 
-    static void wdf_callback(wdfTree *myWdfTree, jack_nframes_t nframes, audioBufVector outBufsWdf){
-            for (unsigned int i_sample = 0; i_sample < nframes; i_sample++)
-            {
+static void wdf_callback(wdfTree *myWdfTree, jack_nframes_t nframes, audioBufVector outBufsWdf){
+        for (unsigned int i_sample = 0; i_sample < nframes; i_sample++)
+        {
                 //float inVoltage = outBufs[0][i_sample];
                 myWdfTree->setInputValue(outBufsWdf[0][i_sample]);
                 myWdfTree->cycleWave();
                 outBufsWdf[0][i_sample] = { (float)(myWdfTree->getOutputValue()) };
-            }
-    }
+        }
+}
 
 
-    /// Audio Callback Function, output buffers are filled here
-    virtual int audioCallback(jack_nframes_t nframes,
-                              // A vector of pointers to each input port.
-                              audioBufVector inBufs,
-                              // A vector of pointers to each output port.
-                              audioBufVector outBufs){
+/// Audio Callback Function, output buffers are filled here
+virtual int audioCallback(jack_nframes_t nframes,
+                          // A vector of pointers to each input port.
+                          audioBufVector inBufs,
+                          // A vector of pointers to each output port.
+                          audioBufVector outBufs){
 
-      std::thread wdfThread(SampleLooper::wdf_callback, myWdfTree, nframes, outBufs);
-
+        std::thread wdfThread(SampleLooper::wdf_callback, myWdfTree, nframes, outBufs);
 
         /// LOOP over all output buffers
         for(unsigned int i = 0; i < 1; i++)
         {
-            sample->get_frame(nframes, outBufs[0]);
+                sample->get_frame(nframes, outBufs[0]);
 
-            wdfThread.join();
+                wdfThread.join();
 
         }
         return 0;
-    }
+}
 
-    /// Constructor
-    SampleLooper(std::string fileName, float playbackRate) :
+/// Constructor
+SampleLooper(std::string fileName, float playbackRate) :
         JackCpp::AudioIO("sample_looper", 0,1){
 
         reserveInPorts(2);
@@ -74,44 +73,44 @@ public:
         myWdfTree = new wdfTonestackTree();
         myWdfTree->initTree();
         myWdfTree->adaptTree();
-        }
+}
 };
 
 
 /// MAIN
 int main(int argc, char *argv[]){
-    // WDF stuff
-    //wdfTree *myWdfTree;
+        // WDF stuff
+        //wdfTree *myWdfTree;
 
-    float playbackRate = 2.0;
+        float playbackRate = 2.0;
 
-    if(argc<=1){
-        cout << "Pass path to wav-file as argument!" << endl;
-        return 0;
-    }
+        if(argc<=1) {
+                cout << "Pass path to wav-file as argument!" << endl;
+                return 0;
+        }
 
-    /// Create looper with filename from first commandline arg
-    SampleLooper * t = new SampleLooper( std::string(argv[1]), playbackRate );
+        /// Create looper with filename from first commandline arg
+        SampleLooper * t = new SampleLooper( std::string(argv[1]), playbackRate );
 
-    /// Start the jack client (also starts loop)
-    t->start();
+        /// Start the jack client (also starts loop)
+        t->start();
 
-    /// connect mono loop port to stereo output ports
-    t->connectToPhysical(0,0);
-    t->connectToPhysical(0,1);
+        /// connect mono loop port to stereo output ports
+        t->connectToPhysical(0,0);
+        t->connectToPhysical(0,1);
 
-    ///print names
-    cout << "Output port(s):" << endl;
-    for(unsigned int i = 0; i < t->outPorts(); i++)
-        cout << "\t" << t->getOutputPortName(i) << endl;
+        ///print names
+        cout << "Output port(s):" << endl;
+        for(unsigned int i = 0; i < t->outPorts(); i++)
+                cout << "\t" << t->getOutputPortName(i) << endl;
 
-    /// Run until ENTER key
-    printf("### Press ENTER to quit ###\n");
-    getchar();
+        /// Run until ENTER key
+        printf("### Press ENTER to quit ###\n");
+        getchar();
 
-    /// Break down
-    t->disconnectOutPort(0); // Discconect out port.
-    t->close();	// Stop client.
-    delete t;	// Always clean up after yourself.
-    exit(0);
+        /// Break down
+        t->disconnectOutPort(0); // Discconect out port.
+        t->close(); // Stop client.
+        delete t; // Always clean up after yourself.
+        exit(0);
 }
