@@ -1,24 +1,8 @@
-/**
-* \class SampleLooper
-*
-* \brief Just loops a WAV file!
-*
-* \author Henrik von Coler
-*
-* \version $Revision: 0.5 $
-*
-* \date $Date: 2016/08/14 14:16:20 $
-*
-*
-* Contact: von_coler@tu-berlin.de
-*
-*
-*/
-
 #include <iostream>
 #include <stdlib.h>
 #include <unistd.h>
 #include <cmath>
+#include <thread>
 #include <jackaudioio.hpp>
 
 #include "PI/singlesample.h"
@@ -26,23 +10,35 @@
 #include "rt-wdf_lib/Libs/rt-wdf/rt-wdf.h"
 
 // Circuits
-#include "Circuits/wdfCCTAx1Tree.hpp"
+//#include "Circuits/wdfCCTAx1Tree.hpp"
 //#include "Circuits/wdfCCTAx4Tree.hpp"
 //#include "Circuits/wdfJTM45Tree.hpp"
 //#include "Circuits/wdfSwitchTree.hpp"
-//#include "Circuits/wdfTonestackTree.hpp"
+#include "Circuits/wdfTonestackTree.hpp"
 
 using std::cout;
 using std::endl;
 
-/// SAMPLELOOPER
+
 class SampleLooper: public JackCpp::AudioIO {
 
 private:
     SingleSample    *sample;
-    wdfTree* myWdfTree;
+    wdfTree *myWdfTree;
 
 public:
+
+    static void wdf_callback(wdfTree *myWdfTree, jack_nframes_t nframes, audioBufVector outBufsWdf){
+            for (unsigned int i_sample = 0; i_sample < nframes; i_sample++)
+            {
+                //float inVoltage = outBufs[0][i_sample];
+                myWdfTree->setInputValue(outBufsWdf[0][i_sample]);
+                myWdfTree->cycleWave();
+                outBufsWdf[0][i_sample] = { (float)(myWdfTree->getOutputValue()) };
+            }
+    }
+
+
     /// Audio Callback Function, output buffers are filled here
     virtual int audioCallback(jack_nframes_t nframes,
                               // A vector of pointers to each input port.
@@ -50,12 +46,18 @@ public:
                               // A vector of pointers to each output port.
                               audioBufVector outBufs){
 
+      std::thread wdfThread(SampleLooper::wdf_callback, myWdfTree, nframes, outBufs);
+
+
         /// LOOP over all output buffers
         for(unsigned int i = 0; i < 1; i++)
         {
-            sample->get_frame(nframes,outBufs[0]);
+            sample->get_frame(nframes, outBufs[0]);
+
+            wdfThread.join();
+
         }
-        return 0; /// Return 0 on success
+        return 0;
     }
 
     /// Constructor
@@ -68,23 +70,24 @@ public:
         /// allocate the sample player
         sample = new SingleSample(fileName);
         sample->set_rate(playbackRate);
-    }
+
+        myWdfTree = new wdfTonestackTree();
+        myWdfTree->initTree();
+        myWdfTree->adaptTree();
+        }
 };
 
 
 /// MAIN
 int main(int argc, char *argv[]){
-    float playbackRate = 1.0;
+    // WDF stuff
+    //wdfTree *myWdfTree;
+
+    float playbackRate = 2.0;
 
     if(argc<=1){
         cout << "Pass path to wav-file as argument!" << endl;
         return 0;
-    }
-    else if(argc==2) {
-        playbackRate = 1.0;
-    }
-    else {
-        playbackRate = atof(argv[2]);
     }
 
     /// Create looper with filename from first commandline arg

@@ -2,6 +2,8 @@
 execFile='./build/wdfLooper'
 audioFile='./data/testLoop.wav'
 
+# take care of jack?
+
 if [ -f $execFile ]; then
     $execFile $audioFile
 else
