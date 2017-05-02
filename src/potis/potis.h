@@ -17,5 +17,6 @@ class Potis {
 void setup_ads();
 void powerdown_ads();
 void read_n_values(int n);
+void read_cont_values();
 
 #endif  // POTIS_H

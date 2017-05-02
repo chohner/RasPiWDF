@@ -95,6 +95,7 @@ void powerdown_ads(){
     exit (1);
   }
   close(fd);
+  cout << "ADS1115 Powerdown complete\n";
 }
 
 float read_ads(){
@@ -127,6 +128,27 @@ void read_n_values(int n){
     potis.setPoti(0, curValue);
     cout << curVolt << " Volt => " << potis.getPoti(0) << endl;
     usleep(10000);  // microseconds
+  }
+}
+
+void read_cont_values(){
+  float maxVolt = 2.0;
+  float lastVolt = 0.0;
+
+  for(;;){
+    float curVolt = read_ads();
+    curVolt = std::round(curVolt * 100) / 100;
+
+    if (curVolt != lastVolt){
+      lastVolt = curVolt;
+      if (curVolt > maxVolt) maxVolt = curVolt;
+
+      float curValue = curVolt / maxVolt;
+
+      potis.setPoti(0, curValue);
+      cout << curVolt << " Volt => " << potis.getPoti(0) << endl;
+      usleep(10000);  // microseconds
+    }
   }
 }
 

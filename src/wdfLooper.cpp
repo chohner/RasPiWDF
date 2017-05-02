@@ -110,7 +110,7 @@ int main(int argc, char *argv[]){
 
         /// Potis
         setup_ads();
-        std::thread readingThread(read_n_values, 100);
+        std::thread readingThread(read_cont_values);
         readingThread.detach();
         /// Run until ENTER key
         printf("### Press ENTER to quit ###\n");
