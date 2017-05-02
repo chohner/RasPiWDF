@@ -47,7 +47,7 @@ static void wdf_adaptParam(wdfTree *myWdfTree){
         for (;;) {
                 if (P0_s != potis.getPoti(0)) {
                         P0_s = potis.getPoti(0);
-                        myWdfTree->setParam(2, P0_s);
+                        myWdfTree->setParam(2, P0_s + 0.0001);
                 }
         }
 }
