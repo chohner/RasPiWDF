@@ -40,7 +40,15 @@ static void wdf_callback(wdfTree *myWdfTree, jack_nframes_t nframes, audioBufVec
 }
 
 static void wdf_adaptParam(wdfTree *myWdfTree){
-        myWdfTree->setParam(2,6);
+        extern Potis potis;
+        float P0_s = 0;
+
+        for (;;){
+          if (P0_s != potis.getPoti(0)){
+            P0_s = potis.getPoti(0);
+            myWdfTree->setParam(2, P0_s);
+          }
+        }
 }
 
 /// Audio Callback Function, output buffers are filled here
