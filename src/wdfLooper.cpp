@@ -39,6 +39,9 @@ static void wdf_callback(wdfTree *myWdfTree, jack_nframes_t nframes, audioBufVec
         }
 }
 
+static void wdf_adaptParam(wdfTree *myWdfTree){
+        myWdfTree->setParam(2,6);
+}
 
 /// Audio Callback Function, output buffers are filled here
 virtual int audioCallback(jack_nframes_t nframes,
@@ -49,8 +52,7 @@ virtual int audioCallback(jack_nframes_t nframes,
 
         std::thread wdfThread(SampleLooper::wdf_callback, myWdfTree, nframes, outBufs);
 
-        myWdfTree->setParam(2, 6);
-
+        //myWdfTree->setParam(2, 6);
         /// LOOP over all output buffers
         for(unsigned int i = 0; i < 1; i++)
         {
@@ -77,8 +79,12 @@ SampleLooper(std::string fileName, float playbackRate) :
         myWdfTree->initTree();
         myWdfTree->setSamplerate(44100);
         myWdfTree->adaptTree();
+
+        std::thread wdf_adaptParam_thread(SampleLooper::wdf_adaptParam, myWdfTree);
+        wdf_adaptParam_thread.detach();
+
 }
-};
+};  // Class SampleLooper
 
 
 /// MAIN
