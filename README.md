@@ -1,11 +1,16 @@
 This repository is an example of how to implement a Wave Digital Filter (WDF) Tonestack on a Rasberry Pi 3.
 
+# Packages
 Make sure to fulfill all requirements of the WDF library first. This includes e.g. armadillo (and its dependencies) and superLU. Note that there are some multi-threaded drop-in replacements for the BLAS/LAPACK dependency available, e.g. OpenBLAS.
 
-A ADS1115 A/D-Converter provides 4 channels with 16 bit resolution and is connected to the PI via I2C. 
+# A/D- Converter
+An ADS1115 A/D-Converter provides 4 channels with 16 bit resolution and is connected to the PI via I2C.
+You have to enable the PI's I2C port first.
+
 Analog potentiometers can then modify the filter in real-time.
 
-# Threads
+# Some Details
+## Threads
 
 ![png](docu/drawingWDF.png)
 
